@@ -2,9 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   updateProfile,
 } from 'firebase/auth'
@@ -22,12 +24,25 @@ export function AuthProvider({ children }) {
       name: currentUser.displayName || fallback.name,
       email: currentUser.email,
       photoURL: currentUser.photoURL || fallback.photoURL,
+      role: fallback.role,
     })
     setProfile(data.data)
     return data.data
   }, [])
 
   useEffect(() => {
+    getRedirectResult(auth)
+      .then((credential) => {
+        if (!credential?.user) return
+
+        const role = localStorage.getItem('pendingGoogleRole') || 'user'
+        localStorage.removeItem('pendingGoogleRole')
+        return syncSession(credential.user, { role })
+      })
+      .catch((error) => {
+        console.error('Google redirect login failed', error)
+      })
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser)
 
@@ -49,11 +64,11 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [syncSession])
 
-  const registerWithEmail = useCallback(async ({ name, email, password, photoURL }) => {
+  const registerWithEmail = useCallback(async ({ name, email, password, photoURL, role }) => {
     const credential = await createUserWithEmailAndPassword(auth, email, password)
     await updateProfile(credential.user, { displayName: name, photoURL })
     setUser(auth.currentUser)
-    return syncSession(credential.user, { name, photoURL })
+    return syncSession(credential.user, { name, photoURL, role })
   }, [syncSession])
 
   const loginWithEmail = useCallback(async ({ email, password }) => {
@@ -61,10 +76,24 @@ export function AuthProvider({ children }) {
     return syncSession(credential.user)
   }, [syncSession])
 
-  const loginWithGoogle = useCallback(async () => {
+  const loginWithGoogle = useCallback(async (role = 'user') => {
     const provider = new GoogleAuthProvider()
-    const credential = await signInWithPopup(auth, provider)
-    return syncSession(credential.user)
+    provider.setCustomParameters({ prompt: 'select_account' })
+
+    try {
+      const credential = await signInWithPopup(auth, provider)
+      return syncSession(credential.user, { role })
+    } catch (error) {
+      console.error('Google popup login failed', error)
+
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        localStorage.setItem('pendingGoogleRole', role)
+        await signInWithRedirect(auth, provider)
+        return null
+      }
+
+      throw error
+    }
   }, [syncSession])
 
   const logout = async () => {
