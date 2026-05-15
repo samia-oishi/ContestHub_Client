@@ -20,7 +20,7 @@ const navByRole = {
 }
 
 export function DashboardLayout() {
-  const { role } = useAuth()
+  const { role, profile } = useAuth()
   const navItems = navByRole[role] || navByRole.user
 
   return (
@@ -34,6 +34,8 @@ export function DashboardLayout() {
                 <LayoutDashboard size={20} />
               </label>
               <h1 className="text-lg font-semibold">Dashboard</h1>
+              <span className="badge badge-outline capitalize">{role}</span>
+              {profile?.email ? <span className="hidden text-sm text-base-content/60 sm:inline">{profile.email}</span> : null}
             </div>
           </header>
           <section className="p-4 sm:p-6">
