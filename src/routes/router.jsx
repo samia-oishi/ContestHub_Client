@@ -14,6 +14,8 @@ import { AddContest } from '../pages/dashboard/creator/AddContest'
 import { EditContest } from '../pages/dashboard/creator/EditContest'
 import { MyCreatedContests } from '../pages/dashboard/creator/MyCreatedContests'
 import { SubmittedTasks } from '../pages/dashboard/creator/SubmittedTasks'
+import { ManageContests } from '../pages/dashboard/admin/ManageContests'
+import { ManageUsers } from '../pages/dashboard/admin/ManageUsers'
 import { Payment } from '../pages/payment/Payment'
 import { Leaderboard } from '../pages/leaderboard/Leaderboard'
 import { HowItWorks } from '../pages/static/HowItWorks'
@@ -69,8 +71,8 @@ export const router = createBrowserRouter([
           { path: 'my-created-contests', element: <RequireAuth roles={['creator']}><MyCreatedContests /></RequireAuth> },
           { path: 'edit-contest/:id', element: <RequireAuth roles={['creator']}><EditContest /></RequireAuth> },
           { path: 'submissions', element: <RequireAuth roles={['creator']}><SubmittedTasks /></RequireAuth> },
-          { path: 'manage-users', element: <RequireAuth roles={['admin']}><PlaceholderPage title="Manage Users" /></RequireAuth> },
-          { path: 'manage-contests', element: <RequireAuth roles={['admin']}><PlaceholderPage title="Manage Contests" /></RequireAuth> },
+          { path: 'manage-users', element: <RequireAuth roles={['admin']}><ManageUsers /></RequireAuth> },
+          { path: 'manage-contests', element: <RequireAuth roles={['admin']}><ManageContests /></RequireAuth> },
           { path: '*', element: <Navigate to="/dashboard" replace /> },
         ],
       },

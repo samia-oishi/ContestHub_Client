@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router'
 import { LayoutDashboard } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import { ThemeToggle } from '../shared/ThemeToggle'
 
 const navByRole = {
   user: [
@@ -36,6 +37,9 @@ export function DashboardLayout() {
               <h1 className="text-lg font-semibold">Dashboard</h1>
               <span className="badge badge-outline capitalize">{role}</span>
               {profile?.email ? <span className="hidden text-sm text-base-content/60 sm:inline">{profile.email}</span> : null}
+              <div className="ml-auto">
+                <ThemeToggle />
+              </div>
             </div>
           </header>
           <section className="p-4 sm:p-6">

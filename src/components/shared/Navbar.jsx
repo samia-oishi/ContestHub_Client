@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router'
-import { Moon, Sun } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import { ThemeToggle } from './ThemeToggle'
 
 const links = [
   ['Home', '/'],
@@ -13,12 +12,6 @@ const links = [
 
 export function Navbar() {
   const { user, logout } = useAuth()
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'contesthub')
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
 
   return (
     <header className="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
@@ -38,13 +31,7 @@ export function Navbar() {
           </ul>
         </nav>
         <div className="navbar-end gap-2">
-          <button
-            className="btn btn-ghost btn-square"
-            onClick={() => setTheme((current) => (current === 'contesthub' ? 'contesthubdark' : 'contesthub'))}
-            aria-label="Toggle theme"
-          >
-            {theme === 'contesthub' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
+          <ThemeToggle />
           {user ? (
             <div className="dropdown dropdown-end">
               <button className="avatar btn btn-ghost btn-circle">
