@@ -44,8 +44,3 @@ export async function deleteContest(id) {
   const { data } = await api.delete(`/contests/${id}`)
   return data.data
 }
-
-export async function getCreatorSubmissions() {
-  const { data } = await api.get('/submissions/creator')
-  return data.data
-}

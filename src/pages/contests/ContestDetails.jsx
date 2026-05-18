@@ -1,7 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { Link, useParams } from 'react-router'
 import { getContestDetails } from '../../api/contestApi'
+import { getRegistrationStatus } from '../../api/paymentApi'
+import { createSubmission, getSubmissionStatus } from '../../api/submissionApi'
 import { Countdown } from '../../components/contest/Countdown'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { LoadingState } from '../../components/shared/LoadingState'
@@ -10,6 +14,14 @@ import { formatCurrency, formatDate } from '../../utils/formatters'
 export function ContestDetails() {
   const { id } = useParams()
   const [now, setNow] = useState(() => new Date())
+  const [submissionOpen, setSubmissionOpen] = useState(false)
+  const queryClient = useQueryClient()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
   const {
     data: contest,
     isLoading,
@@ -18,6 +30,29 @@ export function ContestDetails() {
     queryKey: ['contest-details', id],
     queryFn: () => getContestDetails(id),
     enabled: Boolean(id),
+  })
+  const { data: registrationStatus } = useQuery({
+    queryKey: ['registration-status', id],
+    queryFn: () => getRegistrationStatus(id),
+    enabled: Boolean(id),
+  })
+  const { data: submissionStatus } = useQuery({
+    queryKey: ['submission-status', id],
+    queryFn: () => getSubmissionStatus(id),
+    enabled: Boolean(id),
+  })
+
+  const submissionMutation = useMutation({
+    mutationFn: createSubmission,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['submission-status', id] })
+      toast.success('Task submitted')
+      reset()
+      setSubmissionOpen(false)
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Submission failed')
+    },
   })
 
   useEffect(() => {
@@ -38,6 +73,15 @@ export function ContestDetails() {
   }
 
   const ended = contest.deadline ? new Date(contest.deadline).getTime() <= now.getTime() : false
+  const registered = Boolean(registrationStatus?.registered)
+  const submitted = Boolean(submissionStatus?.submitted)
+
+  const handleTaskSubmit = (values) => {
+    submissionMutation.mutate({
+      contestId: contest._id,
+      taskLinkOrText: values.taskLinkOrText,
+    })
+  }
 
   return (
     <section className="page-shell py-10">
@@ -81,11 +125,16 @@ export function ContestDetails() {
               <span className="text-base-content/70">Prize money</span>
               <span className="font-semibold">{formatCurrency(contest.prizeMoney || 0)}</span>
             </div>
-            <Link className={`btn mt-3 w-full ${ended ? 'btn-disabled' : 'btn-primary'}`} to={`/payment/${contest._id}`}>
-              {ended ? 'Contest Ended' : 'Register / Pay'}
+            <Link className={`btn mt-3 w-full ${ended || registered ? 'btn-disabled' : 'btn-primary'}`} to={`/payment/${contest._id}`}>
+              {registered ? 'Registered' : ended ? 'Contest Ended' : 'Register / Pay'}
             </Link>
-            <button className="btn btn-outline w-full" disabled>
-              Submit Task
+            <button
+              className="btn btn-outline w-full"
+              disabled={!registered || submitted || ended}
+              type="button"
+              onClick={() => setSubmissionOpen(true)}
+            >
+              {submitted ? 'Task Submitted' : registered ? 'Submit Task' : 'Submit after registration'}
             </button>
           </div>
 
@@ -102,6 +151,44 @@ export function ContestDetails() {
           </div>
         </aside>
       </div>
+
+      {submissionOpen ? (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-xl">
+            <h2 className="text-xl font-semibold">Submit task</h2>
+            <p className="mt-2 text-sm text-base-content/65">Add your completed work link or a short note for the contest creator.</p>
+
+            <form className="mt-5 space-y-4" onSubmit={handleSubmit(handleTaskSubmit)}>
+              <div>
+                <label className="label" htmlFor="taskLinkOrText">
+                  <span className="label-text">Submission</span>
+                </label>
+                <textarea
+                  id="taskLinkOrText"
+                  className="textarea textarea-bordered min-h-32 w-full"
+                  placeholder="Paste your public task link or describe where the creator can review your work."
+                  {...register('taskLinkOrText', {
+                    required: 'Submission is required',
+                    minLength: { value: 8, message: 'Submission is too short' },
+                    maxLength: { value: 1000, message: 'Submission is too long' },
+                  })}
+                />
+                {errors.taskLinkOrText ? <p className="mt-1 text-sm text-error">{errors.taskLinkOrText.message}</p> : null}
+              </div>
+
+              <div className="modal-action">
+                <button className="btn btn-ghost" type="button" onClick={() => setSubmissionOpen(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-primary" disabled={submissionMutation.isPending} type="submit">
+                  {submissionMutation.isPending ? 'Submitting...' : 'Submit task'}
+                </button>
+              </div>
+            </form>
+          </div>
+          <button className="modal-backdrop" type="button" onClick={() => setSubmissionOpen(false)}>Close</button>
+        </div>
+      ) : null}
     </section>
   )
 }

@@ -1,14 +1,36 @@
-import { useQuery } from '@tanstack/react-query'
-import { getCreatorSubmissions } from '../../../api/contestApi'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
+import { declareWinner, getCreatorSubmissions } from '../../../api/submissionApi'
 import { EmptyState } from '../../../components/shared/EmptyState'
 import { LoadingState } from '../../../components/shared/LoadingState'
 import { formatDate } from '../../../utils/formatters'
 
 export function SubmittedTasks() {
+  const queryClient = useQueryClient()
+  const [pageLoadedAt] = useState(() => Date.now())
   const { data: submissions = [], isLoading, isError } = useQuery({
     queryKey: ['creator-submissions'],
     queryFn: getCreatorSubmissions,
   })
+  const winnerMutation = useMutation({
+    mutationFn: declareWinner,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['creator-submissions'] })
+      toast.success('Winner declared')
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Winner could not be declared')
+    },
+  })
+
+  const canDeclareWinner = (submission) => {
+    const ended = submission.contestDeadline
+      ? new Date(submission.contestDeadline).getTime() <= pageLoadedAt
+      : false
+
+    return ended && !submission.contestHasWinner && !submission.isWinner
+  }
 
   return (
     <div className="space-y-5">
@@ -32,6 +54,7 @@ export function SubmittedTasks() {
                 <th>Participant</th>
                 <th>Email</th>
                 <th>Submitted</th>
+                <th>Task</th>
                 <th>Status</th>
                 <th></th>
               </tr>
@@ -43,8 +66,21 @@ export function SubmittedTasks() {
                   <td>{submission.userName}</td>
                   <td>{submission.userEmail}</td>
                   <td>{formatDate(submission.submittedAt)}</td>
+                  <td>
+                    <a className="link link-primary" href={submission.taskLinkOrText} target="_blank" rel="noreferrer">
+                      View
+                    </a>
+                  </td>
                   <td><span className="badge badge-outline">{submission.isWinner ? 'Winner' : submission.status || 'Submitted'}</span></td>
-                  <td><button className="btn btn-outline btn-xs" disabled>Declare Winner</button></td>
+                  <td>
+                    <button
+                      className="btn btn-outline btn-xs"
+                      disabled={!canDeclareWinner(submission) || winnerMutation.isPending}
+                      onClick={() => winnerMutation.mutate(submission._id)}
+                    >
+                      Declare Winner
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
