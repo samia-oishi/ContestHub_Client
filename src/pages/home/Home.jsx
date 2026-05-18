@@ -1,13 +1,27 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router'
-import { Search } from 'lucide-react'
+import { ArrowRight, CreditCard, FileCheck2, Search, Trophy } from 'lucide-react'
 import { getPopularContests } from '../../api/contestApi'
 import { getRecentWinners } from '../../api/statsApi'
 import { ContestCard } from '../../components/contest/ContestCard'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { LoadingState } from '../../components/shared/LoadingState'
 import { formatCurrency } from '../../utils/formatters'
+import contestWinnerImage from '../../assets/contest-winner.png'
+
+const contestTypes = [
+  ['Image Design', 'Visual contests for creative artwork and brand assets.', 'bg-teal-50 border-teal-200 text-teal-800'],
+  ['Article Writing', 'Writing tasks for research, stories, and useful guides.', 'bg-sky-50 border-sky-200 text-sky-800'],
+  ['Marketing Strategy', 'Practical campaigns, launch ideas, and audience plans.', 'bg-amber-50 border-amber-200 text-amber-800'],
+  ['Business Idea', 'Pitch simple ideas and solve real product problems.', 'bg-slate-100 border-slate-300 text-slate-800'],
+]
+
+const steps = [
+  ['Browse', 'Find approved contests by type and check the full task details.', Search],
+  ['Register', 'Pay the entry fee through a secure Stripe card checkout.', CreditCard],
+  ['Submit', 'Send your task before the deadline and wait for the creator review.', FileCheck2],
+]
 
 export function Home() {
   const [search, setSearch] = useState('')
@@ -33,49 +47,79 @@ export function Home() {
 
   return (
     <>
-      <section className="bg-base-200">
-        <div className="page-shell grid gap-8 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div className="space-y-6">
-            <p className="font-medium text-primary">Discover, compete, and celebrate creative work</p>
-            <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">Find practical contests built for real talent.</h1>
-            <form className="join w-full max-w-xl" onSubmit={handleSearch}>
-              <input
-                className="input join-item input-bordered w-full"
-                placeholder="Search by contest type"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-              <button className="btn btn-primary join-item">
-                <Search size={18} />
-                Search
-              </button>
-            </form>
-          </div>
-          <div className="surface p-6">
-            <p className="text-sm font-medium text-primary">Winner spotlight</p>
-            {winners.length > 0 ? (
-              <div className="mt-4 space-y-4">
-                {winners.map((winner) => (
-                  <div key={winner._id} className="flex gap-3 rounded-lg border border-base-300 p-3">
-                    <img className="h-14 w-14 rounded-full object-cover" src={winner.winnerPhoto || '/favicon.svg'} alt={winner.winnerName} />
-                    <div>
-                      <h2 className="font-semibold">{winner.winnerName}</h2>
-                      <p className="text-sm text-base-content/70">{winner.contestTitle}</p>
-                      <p className="mt-1 text-sm font-medium">{formatCurrency(winner.prizeMoney)} prize</p>
-                    </div>
-                  </div>
-                ))}
-                <Link className="btn btn-outline btn-sm" to="/leaderboard">View leaderboard</Link>
-              </div>
-            ) : (
-              <>
-                <h2 className="mt-2 text-2xl font-semibold">Celebrate the work that wins prizes and recognition.</h2>
-                <p className="mt-3 text-sm text-base-content/70">
-                  Winner spotlights will appear here after creators declare contest results.
+      <section className="bg-[#f7a978] px-3 py-5 sm:px-5">
+        <div className="page-shell overflow-hidden rounded-[28px] bg-[#fff3e8] px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+            <div className="space-y-6">
+              <div>
+                <p className="inline-flex rounded-full border border-orange-200 bg-white/70 px-3 py-1 text-sm font-medium text-orange-700">
+                  Contests for participants and creators
                 </p>
-              </>
-            )}
+                <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
+                  Join contests, submit work, and manage winners in one place.
+                </h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">
+                  Participants can compete in approved contests. Creators can publish tasks, review submissions, and declare winners after the deadline.
+                </p>
+              </div>
+
+              <div className="max-w-2xl rounded-2xl border border-orange-200 bg-white p-3 shadow-sm">
+                <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearch}>
+                  <input
+                    className="input input-bordered min-w-0 flex-1 bg-white"
+                    placeholder="Search by contest type"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                  <button className="btn border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700">
+                    <Search size={18} />
+                    Search
+                  </button>
+                </form>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link className="btn border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700" to="/all-contests">
+                  Browse as participant
+                  <ArrowRight size={17} />
+                </Link>
+                <Link className="btn border-orange-200 bg-white text-orange-700 hover:border-orange-300 hover:bg-orange-50" to="/register">
+                  Start as creator
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative min-h-[430px] overflow-hidden rounded-[24px] bg-[#ffd9b5] p-5">
+              <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[34px] border-white/50" />
+              <div className="absolute -bottom-28 left-12 h-80 w-80 rounded-full border-[42px] border-white/35" />
+              <div className="relative flex min-h-[390px] items-center justify-center">
+                <img
+                  className="max-h-[430px] w-full object-contain"
+                  src={contestWinnerImage}
+                  alt="Contest winner holding a trophy and medal"
+                />
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section className="page-shell py-12">
+        <div className="mb-6">
+          <p className="text-sm font-medium text-primary">Featured contest types</p>
+          <h2 className="text-2xl font-semibold">Choose a category and start exploring</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {contestTypes.map(([title, description, classes]) => (
+            <Link
+              key={title}
+              to={`/all-contests?type=${encodeURIComponent(title)}`}
+              className={`rounded-lg border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${classes}`}
+            >
+              <h3 className="text-lg font-semibold">{title}</h3>
+              <p className="mt-2 text-sm leading-6 opacity-80">{description}</p>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -105,20 +149,67 @@ export function Home() {
       </section>
 
       <section className="border-y border-base-300 bg-base-200">
-        <div className="page-shell grid gap-6 py-12 md:grid-cols-3">
-          <div>
-            <h2 className="text-xl font-semibold">Browse with intent</h2>
-            <p className="mt-2 text-sm text-base-content/70">Filter by contest type and open details before joining.</p>
+        <div className="page-shell py-12">
+          <div className="mb-6">
+            <p className="text-sm font-medium text-primary">Simple process</p>
+            <h2 className="text-2xl font-semibold">How participation works</h2>
           </div>
-          <div>
-            <h2 className="text-xl font-semibold">Register securely</h2>
-            <p className="mt-2 text-sm text-base-content/70">Join approved contests through a verified Stripe checkout.</p>
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold">Track your results</h2>
-            <p className="mt-2 text-sm text-base-content/70">Your dashboard will keep entries, submissions, and wins organized.</p>
+          <div className="grid gap-5 md:grid-cols-3">
+            {steps.map(([title, description, Icon], index) => (
+              <div key={title} className="rounded-lg border border-base-300 bg-base-100 p-5">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-content">
+                    <Icon size={18} />
+                  </span>
+                  <span className="text-sm font-medium text-base-content/50">Step {index + 1}</span>
+                </div>
+                <h3 className="mt-4 text-xl font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-base-content/70">{description}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
+
+      <section className="page-shell py-12">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-primary">Recent winners</p>
+            <h2 className="text-2xl font-semibold">Results from completed contests</h2>
+          </div>
+          <Link to="/leaderboard" className="btn btn-outline btn-sm">
+            Leaderboard
+          </Link>
+        </div>
+
+        {winners.length === 0 ? (
+          <EmptyState title="No winners declared yet" message="Recent winners will appear here after creators declare contest results." />
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {winners.map((winner) => (
+              <article key={winner._id} className="surface overflow-hidden">
+                <img className="aspect-[16/9] w-full object-cover" src={winner.contestImage || '/favicon.svg'} alt={winner.contestTitle} />
+                <div className="p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="badge badge-outline">{winner.contestType}</span>
+                    <span className="flex items-center gap-1 text-sm font-medium text-amber-700">
+                      <Trophy size={16} />
+                      {formatCurrency(winner.prizeMoney)}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-lg font-semibold">{winner.contestTitle}</h3>
+                  <div className="mt-4 flex items-center gap-3">
+                    <img className="h-11 w-11 rounded-full object-cover" src={winner.winnerPhoto || '/favicon.svg'} alt={winner.winnerName} />
+                    <div>
+                      <p className="font-medium">{winner.winnerName}</p>
+                      <p className="text-sm text-base-content/60">Winner</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </>
   )
