@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router'
 import { Menu } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { useAuth } from '../../hooks/useAuth'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -13,6 +14,15 @@ const links = [
 
 export function Navbar() {
   const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success('Logged out successfully')
+    } catch {
+      toast.error('Logout failed')
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
@@ -58,7 +68,7 @@ export function Navbar() {
                   <Link to="/dashboard">Dashboard</Link>
                 </li>
                 <li>
-                  <button onClick={logout}>Logout</button>
+                  <button onClick={handleLogout}>Logout</button>
                 </li>
               </ul>
             </div>
