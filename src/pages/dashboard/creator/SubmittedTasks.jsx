@@ -9,6 +9,7 @@ import { formatDate } from '../../../utils/formatters'
 export function SubmittedTasks() {
   const queryClient = useQueryClient()
   const [pageLoadedAt] = useState(() => Date.now())
+  const [openSubmission, setOpenSubmission] = useState(null)
   const { data: submissions = [], isLoading, isError } = useQuery({
     queryKey: ['creator-submissions'],
     queryFn: getCreatorSubmissions,
@@ -16,7 +17,14 @@ export function SubmittedTasks() {
   const winnerMutation = useMutation({
     mutationFn: declareWinner,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['creator-submissions'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['creator-submissions'] }),
+        queryClient.invalidateQueries({ queryKey: ['recent-winners'] }),
+        queryClient.invalidateQueries({ queryKey: ['leaderboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['profile-stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-winning-registrations'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-registrations'] }),
+      ])
       toast.success('Winner declared')
     },
     onError: (error) => {
@@ -31,6 +39,8 @@ export function SubmittedTasks() {
 
     return ended && !submission.contestHasWinner && !submission.isWinner
   }
+
+  const isUrl = (value = '') => /^https?:\/\/\S+$/i.test(value.trim())
 
   return (
     <div className="space-y-5">
@@ -67,9 +77,15 @@ export function SubmittedTasks() {
                   <td>{submission.userEmail}</td>
                   <td>{formatDate(submission.submittedAt)}</td>
                   <td>
-                    <a className="link link-primary" href={submission.taskLinkOrText} target="_blank" rel="noreferrer">
-                      View
-                    </a>
+                    {isUrl(submission.taskLinkOrText) ? (
+                      <a className="link link-primary" href={submission.taskLinkOrText} target="_blank" rel="noreferrer">
+                        View
+                      </a>
+                    ) : (
+                      <button className="link link-primary" onClick={() => setOpenSubmission(submission)}>
+                        View text
+                      </button>
+                    )}
                   </td>
                   <td><span className="badge badge-outline">{submission.isWinner ? 'Winner' : submission.status || 'Submitted'}</span></td>
                   <td>
@@ -85,6 +101,22 @@ export function SubmittedTasks() {
               ))}
             </tbody>
           </table>
+        </div>
+      ) : null}
+
+      {openSubmission ? (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h2 className="text-xl font-semibold">Submission</h2>
+            <p className="mt-1 text-sm text-base-content/60">{openSubmission.userName} - {openSubmission.contestTitle}</p>
+            <div className="mt-5 rounded-lg border border-base-300 bg-base-200 p-4">
+              <p className="whitespace-pre-wrap text-sm leading-6">{openSubmission.taskLinkOrText}</p>
+            </div>
+            <div className="modal-action">
+              <button className="btn btn-primary" onClick={() => setOpenSubmission(null)}>Close</button>
+            </div>
+          </div>
+          <button className="modal-backdrop" type="button" onClick={() => setOpenSubmission(null)}>Close</button>
         </div>
       ) : null}
     </div>

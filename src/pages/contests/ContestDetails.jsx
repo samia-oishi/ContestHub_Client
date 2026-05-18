@@ -136,6 +136,12 @@ export function ContestDetails() {
             >
               {submitted ? 'Task Submitted' : registered ? 'Submit Task' : 'Submit after registration'}
             </button>
+            {registered && submitted ? (
+              <p className="text-center text-xs text-base-content/60">Your task has been submitted for creator review.</p>
+            ) : null}
+            {registered && ended && !submitted ? (
+              <p className="text-center text-xs text-base-content/60">Submission is closed because the deadline has passed.</p>
+            ) : null}
           </div>
 
           <div className="surface p-5">
