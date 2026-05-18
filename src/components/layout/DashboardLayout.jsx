@@ -49,11 +49,8 @@ export function DashboardLayout() {
               <h1 className="text-lg font-semibold">Dashboard</h1>
               <span className="badge badge-outline capitalize">{role}</span>
               {profile?.email ? <span className="hidden text-sm text-base-content/60 sm:inline">{profile.email}</span> : null}
-              <div className="ml-auto flex items-center gap-2">
+              <div className="ml-auto">
                 <ThemeToggle />
-                <button className="btn btn-ghost btn-square" onClick={handleLogout} title="Logout" aria-label="Logout">
-                  <LogOut size={18} />
-                </button>
               </div>
             </div>
           </header>
