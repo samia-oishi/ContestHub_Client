@@ -25,22 +25,22 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-orange-200 bg-[#fff3e8]">
+    <header className="app-navbar">
       <div className="navbar page-shell min-h-16 px-0">
         <div className="navbar-start">
           <div className="dropdown lg:hidden">
-            <button className="btn btn-ghost btn-square text-orange-700" type="button">
+            <button className="btn btn-ghost btn-square text-primary" type="button">
               <Menu size={20} />
             </button>
-            <ul className="menu dropdown-content z-50 mt-3 w-64 rounded-lg border border-orange-200 bg-[#fffaf4] p-2 shadow-soft">
+            <ul className="menu dropdown-content app-menu z-50 mt-3 w-64">
               {links.map(([label, path]) => (
                 <li key={path}>
-                  <NavLink to={path} className={({ isActive }) => (isActive ? 'text-orange-700' : '')}>{label}</NavLink>
+                  <NavLink to={path} className={({ isActive }) => (isActive ? 'text-primary' : '')}>{label}</NavLink>
                 </li>
               ))}
             </ul>
           </div>
-          <Link to="/" className="text-xl font-bold text-orange-700">
+          <Link to="/" className="text-xl font-bold text-primary">
             ContestHub
           </Link>
         </div>
@@ -51,7 +51,7 @@ export function Navbar() {
                 <NavLink
                   to={path}
                   className={({ isActive }) =>
-                    `rounded-full px-3 py-2 text-sm font-medium ${isActive ? 'bg-orange-100 text-orange-700' : 'text-slate-700 hover:bg-orange-50 hover:text-orange-700'}`
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
                   }
                 >
                   {label}
@@ -69,7 +69,7 @@ export function Navbar() {
                   <img src={user.photoURL || '/favicon.svg'} alt={user.displayName || 'User'} />
                 </div>
               </button>
-              <ul className="menu dropdown-content mt-3 w-56 rounded-lg border border-orange-200 bg-[#fffaf4] p-2 shadow-soft">
+              <ul className="menu dropdown-content app-menu mt-3 w-56">
                 <li className="px-3 py-2 text-sm font-medium">{user.displayName || user.email}</li>
                 <li>
                   <Link to="/dashboard">Dashboard</Link>
@@ -80,7 +80,7 @@ export function Navbar() {
               </ul>
             </div>
           ) : (
-            <Link to="/login" className="btn btn-sm border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700">
+            <Link to="/login" className="btn-brand btn-sm">
               Login
             </Link>
           )}

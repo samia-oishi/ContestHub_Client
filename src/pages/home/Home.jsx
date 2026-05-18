@@ -11,10 +11,10 @@ import { formatCurrency } from '../../utils/formatters'
 import contestWinnerImage from '../../assets/contest-winner.png'
 
 const contestTypes = [
-  ['Image Design', 'Visual contests for creative artwork and brand assets.', 'bg-teal-50 border-teal-200 text-teal-800'],
-  ['Article Writing', 'Writing tasks for research, stories, and useful guides.', 'bg-sky-50 border-sky-200 text-sky-800'],
-  ['Marketing Strategy', 'Practical campaigns, launch ideas, and audience plans.', 'bg-amber-50 border-amber-200 text-amber-800'],
-  ['Business Idea', 'Pitch simple ideas and solve real product problems.', 'bg-slate-100 border-slate-300 text-slate-800'],
+  ['Image Design', 'Visual contests for creative artwork and brand assets.', 'border-secondary/30 bg-secondary/10'],
+  ['Article Writing', 'Writing tasks for research, stories, and useful guides.', 'border-info/30 bg-info/10'],
+  ['Marketing Strategy', 'Practical campaigns, launch ideas, and audience plans.', 'border-accent/30 bg-accent/10'],
+  ['Business Idea', 'Pitch simple ideas and solve real product problems.', 'border-neutral/30 bg-neutral/10'],
 ]
 
 const steps = [
@@ -47,31 +47,31 @@ export function Home() {
 
   return (
     <>
-      <section className="bg-[#f7a978] px-3 py-5 sm:px-5">
-        <div className="page-shell overflow-hidden rounded-[28px] bg-[#fff3e8] px-6 py-10 shadow-soft sm:px-10 lg:px-14 lg:py-14">
+      <section className="hero-frame">
+        <div className="page-shell hero-panel">
           <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <div className="space-y-6">
               <div>
-                <p className="inline-flex rounded-full border border-orange-200 bg-white/70 px-3 py-1 text-sm font-medium text-orange-700">
+                <p className="inline-flex rounded-full border border-base-300 bg-base-100/70 px-3 py-1 text-sm font-medium text-primary">
                   Contests for participants and creators
                 </p>
-                <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
+                <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-base-content sm:text-5xl">
                   Join contests, submit work, and manage winners in one place.
                 </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">
+                <p className="mt-4 max-w-2xl text-base leading-7 text-base-content/75">
                   Participants can compete in approved contests. Creators can publish tasks, review submissions, and declare winners after the deadline.
                 </p>
               </div>
 
-              <div className="max-w-2xl rounded-2xl border border-orange-200 bg-white p-3 shadow-sm">
+              <div className="max-w-2xl rounded-2xl border border-base-300 bg-base-100 p-3 shadow-sm">
                 <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearch}>
                   <input
-                    className="input input-bordered min-w-0 flex-1 bg-white"
+                    className="input input-bordered min-w-0 flex-1 bg-base-100"
                     placeholder="Search by contest type"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
-                  <button className="btn border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700">
+                  <button className="btn-brand">
                     <Search size={18} />
                     Search
                   </button>
@@ -79,19 +79,19 @@ export function Home() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link className="btn border-orange-600 bg-orange-600 text-white hover:border-orange-700 hover:bg-orange-700" to="/all-contests">
+                <Link className="btn-brand" to="/all-contests">
                   Browse as participant
                   <ArrowRight size={17} />
                 </Link>
-                <Link className="btn border-orange-200 bg-white text-orange-700 hover:border-orange-300 hover:bg-orange-50" to="/register">
+                <Link className="btn-brand-outline" to="/register">
                   Start as creator
                 </Link>
               </div>
             </div>
 
-            <div className="relative min-h-[430px] overflow-hidden rounded-[24px] bg-[#ffd9b5] p-5">
-              <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[34px] border-white/50" />
-              <div className="absolute -bottom-28 left-12 h-80 w-80 rounded-full border-[42px] border-white/35" />
+            <div className="hero-visual">
+              <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[34px] border-base-100/50" />
+              <div className="absolute -bottom-28 left-12 h-80 w-80 rounded-full border-[42px] border-base-100/35" />
               <div className="relative flex min-h-[390px] items-center justify-center">
                 <img
                   className="max-h-[430px] w-full object-contain"
@@ -116,8 +116,8 @@ export function Home() {
               to={`/all-contests?type=${encodeURIComponent(title)}`}
               className={`rounded-lg border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${classes}`}
             >
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="mt-2 text-sm leading-6 opacity-80">{description}</p>
+              <h3 className="text-lg font-semibold text-base-content">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-base-content/70">{description}</p>
             </Link>
           ))}
         </div>
@@ -148,7 +148,7 @@ export function Home() {
         ) : null}
       </section>
 
-      <section className="border-y border-base-300 bg-base-200">
+      <section className="section-muted">
         <div className="page-shell py-12">
           <div className="mb-6">
             <p className="text-sm font-medium text-primary">Simple process</p>
@@ -192,7 +192,7 @@ export function Home() {
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-3">
                     <span className="badge badge-outline">{winner.contestType}</span>
-                    <span className="flex items-center gap-1 text-sm font-medium text-amber-700">
+                    <span className="flex items-center gap-1 text-sm font-medium text-accent">
                       <Trophy size={16} />
                       {formatCurrency(winner.prizeMoney)}
                     </span>
