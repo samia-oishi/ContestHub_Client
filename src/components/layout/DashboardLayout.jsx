@@ -1,5 +1,6 @@
-import { NavLink, Outlet } from 'react-router'
-import { LayoutDashboard } from 'lucide-react'
+import { NavLink, Outlet, useNavigate } from 'react-router'
+import { LayoutDashboard, LogOut } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { useAuth } from '../../hooks/useAuth'
 import { ThemeToggle } from '../shared/ThemeToggle'
 
@@ -21,8 +22,19 @@ const navByRole = {
 }
 
 export function DashboardLayout() {
-  const { role, profile } = useAuth()
+  const { role, profile, logout } = useAuth()
+  const navigate = useNavigate()
   const navItems = navByRole[role] || navByRole.user
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success('Logged out successfully')
+      navigate('/login')
+    } catch {
+      toast.error('Logout failed')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -37,8 +49,11 @@ export function DashboardLayout() {
               <h1 className="text-lg font-semibold">Dashboard</h1>
               <span className="badge badge-outline capitalize">{role}</span>
               {profile?.email ? <span className="hidden text-sm text-base-content/60 sm:inline">{profile.email}</span> : null}
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-2">
                 <ThemeToggle />
+                <button className="btn btn-ghost btn-square" onClick={handleLogout} title="Logout" aria-label="Logout">
+                  <LogOut size={18} />
+                </button>
               </div>
             </div>
           </header>
@@ -64,6 +79,12 @@ export function DashboardLayout() {
                   {label}
                 </NavLink>
               ))}
+            </div>
+            <div className="mt-6 border-t border-base-300 pt-4">
+              <button className="btn btn-outline w-full justify-start" onClick={handleLogout}>
+                <LogOut size={18} />
+                Logout
+              </button>
             </div>
           </nav>
         </aside>
