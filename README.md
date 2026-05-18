@@ -1,16 +1,72 @@
-# React + Vite
+# ContestHub Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend part of my ContestHub project. It is a contest platform where users can see contests, join them by payment, submit their task, and check their results from the dashboard.
 
-Currently, two official plugins are available:
+The project has three types of users: normal user, contest creator, and admin.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Live website: add after deployment  
+Server link: add after deployment  
+Client repo: add GitHub link  
+Server repo: add GitHub link  
 
-## React Compiler
+Admin email: scribe.oishi@gmail.com  
+Admin password: add before submission  
+Creator email: add before submission  
+Creator password: add before submission  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Main Features
 
-## Expanding the ESLint configuration
+- User registration and login
+- Google login
+- Different dashboard for user, creator, and admin
+- Users can browse approved contests
+- Users can search and filter contests
+- Contest details page with countdown
+- Stripe payment for joining contests
+- Users can submit tasks after joining
+- Creators can add and manage contests
+- Creators can see submissions and declare winner
+- Admin can manage users
+- Admin can approve, reject, and delete contests
+- User profile update
+- Winning percentage chart
+- Leaderboard page
+- Dark and light theme
+- Responsive design
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Used Packages / Tools
+
+React, React Router, Tailwind CSS, DaisyUI, TanStack Query, Axios, Firebase, Stripe, React Hook Form, Recharts, and React Hot Toast.
+
+## Environment Variables
+
+Create a `.env` file and add these:
+
+```env
+VITE_API_URL=http://localhost:5000
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+VITE_STRIPE_PUBLISHABLE_KEY=
+```
+
+## Run Locally
+
+```bash
+npm install
+npm run dev
+```
+
+Local client link:
+
+```txt
+http://localhost:5173
+```
+
+## Deployment
+
+I will deploy this frontend on Vercel. The Firebase keys, Stripe publishable key, and server URL need to be added in Vercel environment variables.
