@@ -10,7 +10,7 @@ import { useAuth } from '../../hooks/useAuth'
 const chartColors = ['#0f766e', '#cbd5e1']
 
 export function Profile() {
-  const { profile, refreshProfile } = useAuth()
+  const { profile, updateAuthProfile } = useAuth()
   const queryClient = useQueryClient()
   const {
     register,
@@ -37,11 +37,9 @@ export function Profile() {
 
   const profileMutation = useMutation({
     mutationFn: updateMyProfile,
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['profile-stats'] }),
-        refreshProfile?.(),
-      ])
+    onSuccess: async (updatedProfile) => {
+      updateAuthProfile?.(updatedProfile)
+      await queryClient.invalidateQueries({ queryKey: ['profile-stats'] })
       toast.success('Profile updated')
     },
     onError: (error) => {

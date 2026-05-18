@@ -30,10 +30,8 @@ export function AuthProvider({ children }) {
     return data.data
   }, [])
 
-  const refreshProfile = useCallback(async () => {
-    const { data } = await api.get('/users/me')
-    setProfile(data.data)
-    return data.data
+  const updateAuthProfile = useCallback((nextProfile) => {
+    setProfile(nextProfile)
   }, [])
 
   useEffect(() => {
@@ -117,10 +115,10 @@ export function AuthProvider({ children }) {
       loginWithEmail,
       loginWithGoogle,
       logout,
-      refreshProfile,
+      updateAuthProfile,
       role: profile?.role || 'user',
     }),
-    [user, profile, loading, registerWithEmail, loginWithEmail, loginWithGoogle, refreshProfile],
+    [user, profile, loading, registerWithEmail, loginWithEmail, loginWithGoogle, updateAuthProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
