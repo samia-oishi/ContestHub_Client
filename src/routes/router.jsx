@@ -9,7 +9,9 @@ import { ContestDetails } from '../pages/contests/ContestDetails'
 import { Login } from '../pages/auth/Login'
 import { Register } from '../pages/auth/Register'
 import { DashboardHome } from '../pages/dashboard/DashboardHome'
-import { PlaceholderPage } from '../pages/dashboard/PlaceholderPage'
+import { Profile } from '../pages/dashboard/Profile'
+import { MyContests } from '../pages/dashboard/user/MyContests'
+import { WinningContests } from '../pages/dashboard/user/WinningContests'
 import { AddContest } from '../pages/dashboard/creator/AddContest'
 import { EditContest } from '../pages/dashboard/creator/EditContest'
 import { MyCreatedContests } from '../pages/dashboard/creator/MyCreatedContests'
@@ -64,9 +66,9 @@ export const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <DashboardHome /> },
-          { path: 'my-contests', element: <RequireAuth roles={['user']}><PlaceholderPage title="My Participated Contests" /></RequireAuth> },
-          { path: 'winning-contests', element: <RequireAuth roles={['user']}><PlaceholderPage title="My Winning Contests" /></RequireAuth> },
-          { path: 'profile', element: <RequireAuth roles={['user', 'creator', 'admin']}><PlaceholderPage title="My Profile" /></RequireAuth> },
+          { path: 'my-contests', element: <RequireAuth roles={['user']}><MyContests /></RequireAuth> },
+          { path: 'winning-contests', element: <RequireAuth roles={['user']}><WinningContests /></RequireAuth> },
+          { path: 'profile', element: <RequireAuth roles={['user', 'creator', 'admin']}><Profile /></RequireAuth> },
           { path: 'add-contest', element: <RequireAuth roles={['creator']}><AddContest /></RequireAuth> },
           { path: 'my-created-contests', element: <RequireAuth roles={['creator']}><MyCreatedContests /></RequireAuth> },
           { path: 'edit-contest/:id', element: <RequireAuth roles={['creator']}><EditContest /></RequireAuth> },

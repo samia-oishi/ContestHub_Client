@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router'
+import { Menu } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -17,6 +18,18 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
       <div className="navbar page-shell min-h-16 px-0">
         <div className="navbar-start">
+          <div className="dropdown lg:hidden">
+            <button className="btn btn-ghost btn-square" type="button">
+              <Menu size={20} />
+            </button>
+            <ul className="menu dropdown-content z-50 mt-3 w-64 rounded-lg border border-base-300 bg-base-100 p-2 shadow-soft">
+              {links.map(([label, path]) => (
+                <li key={path}>
+                  <NavLink to={path}>{label}</NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
           <Link to="/" className="text-xl font-bold text-primary">
             ContestHub
           </Link>

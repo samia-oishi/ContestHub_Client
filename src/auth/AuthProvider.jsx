@@ -30,6 +30,12 @@ export function AuthProvider({ children }) {
     return data.data
   }, [])
 
+  const refreshProfile = useCallback(async () => {
+    const { data } = await api.get('/users/me')
+    setProfile(data.data)
+    return data.data
+  }, [])
+
   useEffect(() => {
     getRedirectResult(auth)
       .then((credential) => {
@@ -111,9 +117,10 @@ export function AuthProvider({ children }) {
       loginWithEmail,
       loginWithGoogle,
       logout,
+      refreshProfile,
       role: profile?.role || 'user',
     }),
-    [user, profile, loading, registerWithEmail, loginWithEmail, loginWithGoogle],
+    [user, profile, loading, registerWithEmail, loginWithEmail, loginWithGoogle, refreshProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

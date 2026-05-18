@@ -3,9 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router'
 import { Search } from 'lucide-react'
 import { getPopularContests } from '../../api/contestApi'
+import { getRecentWinners } from '../../api/statsApi'
 import { ContestCard } from '../../components/contest/ContestCard'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { LoadingState } from '../../components/shared/LoadingState'
+import { formatCurrency } from '../../utils/formatters'
 
 export function Home() {
   const [search, setSearch] = useState('')
@@ -17,6 +19,10 @@ export function Home() {
   } = useQuery({
     queryKey: ['popular-contests'],
     queryFn: getPopularContests,
+  })
+  const { data: winners = [] } = useQuery({
+    queryKey: ['recent-winners'],
+    queryFn: () => getRecentWinners(3),
   })
 
   const handleSearch = (event) => {
@@ -46,11 +52,29 @@ export function Home() {
             </form>
           </div>
           <div className="surface p-6">
-            <p className="text-sm text-base-content/70">Winner advertisement</p>
-            <h2 className="mt-2 text-2xl font-semibold">Celebrate the work that wins clients, prizes, and public recognition.</h2>
-            <p className="mt-3 text-sm text-base-content/70">
-              Winners will appear here dynamically after creators declare results in upcoming phases.
-            </p>
+            <p className="text-sm font-medium text-primary">Winner spotlight</p>
+            {winners.length > 0 ? (
+              <div className="mt-4 space-y-4">
+                {winners.map((winner) => (
+                  <div key={winner._id} className="flex gap-3 rounded-lg border border-base-300 p-3">
+                    <img className="h-14 w-14 rounded-full object-cover" src={winner.winnerPhoto || '/favicon.svg'} alt={winner.winnerName} />
+                    <div>
+                      <h2 className="font-semibold">{winner.winnerName}</h2>
+                      <p className="text-sm text-base-content/70">{winner.contestTitle}</p>
+                      <p className="mt-1 text-sm font-medium">{formatCurrency(winner.prizeMoney)} prize</p>
+                    </div>
+                  </div>
+                ))}
+                <Link className="btn btn-outline btn-sm" to="/leaderboard">View leaderboard</Link>
+              </div>
+            ) : (
+              <>
+                <h2 className="mt-2 text-2xl font-semibold">Celebrate the work that wins prizes and recognition.</h2>
+                <p className="mt-3 text-sm text-base-content/70">
+                  Winner spotlights will appear here after creators declare contest results.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -88,7 +112,7 @@ export function Home() {
           </div>
           <div>
             <h2 className="text-xl font-semibold">Register securely</h2>
-            <p className="mt-2 text-sm text-base-content/70">Payment-backed participation will be connected in the Stripe phase.</p>
+            <p className="mt-2 text-sm text-base-content/70">Join approved contests through a verified Stripe checkout.</p>
           </div>
           <div>
             <h2 className="text-xl font-semibold">Track your results</h2>
