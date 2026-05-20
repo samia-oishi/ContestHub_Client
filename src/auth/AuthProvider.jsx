@@ -20,9 +20,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   const syncSession = useCallback(async (currentUser, fallback = {}) => {
+    const idToken = await currentUser.getIdToken()
     const { data } = await api.post('/auth/jwt', {
+      idToken,
       name: currentUser.displayName || fallback.name,
-      email: currentUser.email,
       photoURL: currentUser.photoURL || fallback.photoURL,
       role: fallback.role,
     })
