@@ -32,8 +32,8 @@ export function Footer() {
 
       <div className="border-t border-blue-800 bg-blue-950/80">
         <div className="page-shell flex flex-col gap-2 py-5 text-sm text-blue-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>Copyright © 2026 ContestHub</p>
-          <p>MERN stack assignment project</p>
+          <p>Copyright 2026 ContestHub</p>
+          <p>Contest platform for creators and participants</p>
         </div>
       </div>
     </footer>

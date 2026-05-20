@@ -10,7 +10,7 @@ Client repo: add GitHub link
 Server repo: add GitHub link  
 
 Admin email: scribe.oishi@gmail.com  
-Admin password: add before submission  
+Admin password: Oishi1!  
 Creator email: add before submission  
 Creator password: add before submission  
 
