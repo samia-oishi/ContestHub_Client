@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { ArrowRight, CreditCard, FileCheck2, Search, Trophy } from 'lucide-react'
 import { getPopularContests } from '../../api/contestApi'
 import { getRecentWinners } from '../../api/statsApi'
@@ -11,12 +10,12 @@ import { formatCurrency } from '../../utils/formatters'
 import contestWinnerImage from '../../assets/contest-winner.png'
 
 const contestTypes = [
-  ['Image Design', 'Visual contests for creative artwork and brand assets.', 'border-secondary/30 bg-secondary/10'],
-  ['Article Writing', 'Writing tasks for research, stories, and useful guides.', 'border-info/30 bg-info/10'],
-  ['Online Gaming', 'Join competitive gaming events and skill-based matches.', 'border-accent/30 bg-accent/10'],
-  ['Singing', 'Share vocal performances and compete in music challenges.', 'border-neutral/30 bg-neutral/10'],
-  ['Coding Challenge', 'Solve practical problems with clean and working code.', 'border-primary/30 bg-primary/10'],
-  ['Dancing', 'Compete with dance performances, routines, and creative moves.', 'border-secondary/30 bg-secondary/10'],
+  ['Image Design', 'Visual contests for creative artwork and brand assets.'],
+  ['Article Writing', 'Writing tasks for research, stories, and useful guides.'],
+  ['Online Gaming', 'Join competitive gaming events and skill-based matches.'],
+  ['Singing', 'Share vocal performances and compete in music challenges.'],
+  ['Coding Challenge', 'Solve practical problems with clean and working code.'],
+  ['Dancing', 'Compete with dance performances, routines, and creative moves.'],
 ]
 
 const steps = [
@@ -26,8 +25,6 @@ const steps = [
 ]
 
 export function Home() {
-  const [search, setSearch] = useState('')
-  const navigate = useNavigate()
   const {
     data: contests = [],
     isLoading,
@@ -40,12 +37,6 @@ export function Home() {
     queryKey: ['recent-winners'],
     queryFn: () => getRecentWinners(3),
   })
-
-  const handleSearch = (event) => {
-    event.preventDefault()
-    const value = search.trim()
-    navigate(value ? `/all-contests?search=${encodeURIComponent(value)}` : '/all-contests')
-  }
 
   return (
     <>
@@ -65,35 +56,18 @@ export function Home() {
                 </p>
               </div>
 
-              <div className="max-w-2xl rounded-2xl border border-base-300 bg-base-100 p-3 shadow-sm">
-                <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSearch}>
-                  <input
-                    className="input input-bordered min-w-0 flex-1 bg-base-100"
-                    placeholder="Search by contest type"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                  <button className="btn-brand">
-                    <Search size={18} />
-                    Search
-                  </button>
-                </form>
-              </div>
-
               <div className="flex flex-wrap gap-3">
                 <Link className="btn-brand" to="/all-contests">
                   Browse as participant
                   <ArrowRight size={17} />
                 </Link>
-                <Link className="btn-brand-outline" to="/register">
+                <Link className="btn-soft" to="/register">
                   Start as creator
                 </Link>
               </div>
             </div>
 
             <div className="hero-visual">
-              <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[34px] border-base-100/50" />
-              <div className="absolute -bottom-28 left-12 h-80 w-80 rounded-full border-[42px] border-base-100/35" />
               <div className="relative flex min-h-[390px] items-center justify-center">
                 <img
                   className="max-h-[430px] w-full object-contain"
@@ -112,11 +86,11 @@ export function Home() {
           <h2 className="text-2xl font-semibold">Choose a category and start exploring</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {contestTypes.map(([title, description, classes]) => (
+          {contestTypes.map(([title, description]) => (
             <Link
               key={title}
               to={`/all-contests?type=${encodeURIComponent(title)}`}
-              className={`rounded-lg border p-5 transition hover:-translate-y-0.5 hover:shadow-md ${classes}`}
+              className="category-card-blue"
             >
               <h3 className="text-lg font-semibold text-base-content">{title}</h3>
               <p className="mt-2 text-sm leading-6 text-base-content/70">{description}</p>
@@ -142,10 +116,16 @@ export function Home() {
           <EmptyState title="No approved contests yet" message="Approved contests will appear here after creators submit them and admins approve them." />
         ) : null}
         {!isLoading && !isError && contests.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {contests.map((contest) => (
-              <ContestCard key={contest._id} contest={contest} />
-            ))}
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-6">
+            {contests.map((contest, index) => {
+              const shouldCenterLastPair = contests.length % 3 === 2 && index === contests.length - 2
+
+              return (
+              <div key={contest._id} className={`w-full xl:col-span-2 ${shouldCenterLastPair ? 'xl:col-start-2' : ''}`}>
+                <ContestCard contest={contest} />
+              </div>
+              )
+            })}
           </div>
         ) : null}
       </section>

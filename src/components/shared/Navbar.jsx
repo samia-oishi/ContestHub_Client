@@ -29,18 +29,18 @@ export function Navbar() {
       <div className="navbar page-shell min-h-16 px-0">
         <div className="navbar-start">
           <div className="dropdown lg:hidden">
-            <button className="btn btn-ghost btn-square text-primary" type="button">
+            <button className="btn btn-ghost btn-square text-blue-800 dark:text-blue-200" type="button">
               <Menu size={20} />
             </button>
             <ul className="menu dropdown-content app-menu z-50 mt-3 w-64">
               {links.map(([label, path]) => (
                 <li key={path}>
-                  <NavLink to={path} className={({ isActive }) => (isActive ? 'text-primary' : '')}>{label}</NavLink>
+                  <NavLink to={path} className={({ isActive }) => (isActive ? 'text-blue-800 dark:text-blue-200' : '')}>{label}</NavLink>
                 </li>
               ))}
             </ul>
           </div>
-          <Link to="/" className="text-xl font-bold text-primary">
+          <Link to="/" className="brand-logo text-xl font-bold">
             ContestHub
           </Link>
         </div>
