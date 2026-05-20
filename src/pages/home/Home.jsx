@@ -13,8 +13,10 @@ import contestWinnerImage from '../../assets/contest-winner.png'
 const contestTypes = [
   ['Image Design', 'Visual contests for creative artwork and brand assets.', 'border-secondary/30 bg-secondary/10'],
   ['Article Writing', 'Writing tasks for research, stories, and useful guides.', 'border-info/30 bg-info/10'],
-  ['Marketing Strategy', 'Practical campaigns, launch ideas, and audience plans.', 'border-accent/30 bg-accent/10'],
-  ['Business Idea', 'Pitch simple ideas and solve real product problems.', 'border-neutral/30 bg-neutral/10'],
+  ['Online Gaming', 'Join competitive gaming events and skill-based matches.', 'border-accent/30 bg-accent/10'],
+  ['Singing', 'Share vocal performances and compete in music challenges.', 'border-neutral/30 bg-neutral/10'],
+  ['Coding Challenge', 'Solve practical problems with clean and working code.', 'border-primary/30 bg-primary/10'],
+  ['Dancing', 'Compete with dance performances, routines, and creative moves.', 'border-secondary/30 bg-secondary/10'],
 ]
 
 const steps = [
@@ -109,7 +111,7 @@ export function Home() {
           <p className="text-sm font-medium text-primary">Featured contest types</p>
           <h2 className="text-2xl font-semibold">Choose a category and start exploring</h2>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {contestTypes.map(([title, description, classes]) => (
             <Link
               key={title}

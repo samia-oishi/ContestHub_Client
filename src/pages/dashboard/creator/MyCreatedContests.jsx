@@ -34,7 +34,7 @@ export function MyCreatedContests() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">My Created Contests</h1>
-          <p className="mt-1 text-sm text-base-content/70">Edit or delete contests while they are still pending.</p>
+          <p className="mt-1 text-sm text-base-content/70">Fully edit pending contests, or update approved contest details without changing price/type.</p>
         </div>
         <Link to="/dashboard/add-contest" className="btn btn-primary btn-sm">Add Contest</Link>
       </div>
@@ -60,7 +60,8 @@ export function MyCreatedContests() {
             </thead>
             <tbody>
               {contests.map((contest) => {
-                const editable = contest.status === 'pending'
+                const editable = ['pending', 'approved'].includes(contest.status)
+                const canDelete = contest.status === 'pending'
                 return (
                   <tr key={contest._id}>
                     <td className="font-medium">{contest.title}</td>
@@ -71,8 +72,16 @@ export function MyCreatedContests() {
                     <td>
                       <div className="flex justify-end gap-2">
                         <Link className="btn btn-outline btn-xs" to="/dashboard/submissions">See Submissions</Link>
-                        <Link className={`btn btn-xs ${editable ? 'btn-primary' : 'btn-disabled'}`} to={`/dashboard/edit-contest/${contest._id}`}>Edit</Link>
-                        <button className={`btn btn-xs ${editable ? 'btn-error' : 'btn-disabled'}`} onClick={() => handleDelete(contest)}>Delete</button>
+                        <Link className={`btn btn-xs ${editable ? 'btn-primary' : 'btn-disabled'}`} to={`/dashboard/edit-contest/${contest._id}`}>
+                          {contest.status === 'approved' ? 'Update Details' : 'Edit'}
+                        </Link>
+                        <button
+                          className={`btn btn-xs ${canDelete ? 'btn-error' : 'btn-disabled'}`}
+                          disabled={!canDelete}
+                          onClick={() => handleDelete(contest)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>

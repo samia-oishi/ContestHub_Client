@@ -5,10 +5,15 @@ import 'react-datepicker/dist/react-datepicker.css'
 const contestTypes = [
   'Image Design',
   'Article Writing',
-  'Marketing Strategy',
-  'Business Idea',
-  'Gaming Review',
+  'Online Gaming',
+  'Singing',
+  'Dancing',
   'UI/UX Design',
+  'Logo Design',
+  'Photography',
+  'Video Editing',
+  'Content Creation',
+  'Coding Challenge',
 ]
 
 function buildDefaultValues(contest) {

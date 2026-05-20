@@ -1,4 +1,4 @@
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { CardElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -14,7 +14,7 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
   : null
 
-function CheckoutForm({ contestId, paymentIntentId }) {
+function CheckoutForm({ contestId, clientSecret, paymentIntentId }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
@@ -41,9 +41,17 @@ function CheckoutForm({ contestId, paymentIntentId }) {
 
     if (!stripe || !elements || confirmMutation.isPending) return
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      redirect: 'if_required',
+    const cardElement = elements.getElement(CardElement)
+
+    if (!cardElement) {
+      toast.error('Card form is not ready')
+      return
+    }
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
     })
 
     if (error) {
@@ -61,7 +69,22 @@ function CheckoutForm({ contestId, paymentIntentId }) {
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
-      <PaymentElement />
+      <div className="rounded-lg border border-base-300 bg-base-100 p-4">
+        <CardElement
+          options={{
+            hidePostalCode: true,
+            style: {
+              base: {
+                color: '#1f2937',
+                fontSize: '16px',
+                '::placeholder': {
+                  color: '#64748b',
+                },
+              },
+            },
+          }}
+        />
+      </div>
       <button className="btn btn-primary w-full" disabled={!stripe || confirmMutation.isPending}>
         {confirmMutation.isPending ? 'Confirming...' : 'Pay and register'}
       </button>
@@ -173,8 +196,12 @@ export function Payment() {
               />
             )}
             {intentQuery.data?.clientSecret && (
-              <Elements stripe={stripePromise} options={{ clientSecret: intentQuery.data.clientSecret }}>
-                <CheckoutForm contestId={contestId} paymentIntentId={intentQuery.data.paymentIntentId} />
+              <Elements stripe={stripePromise}>
+                <CheckoutForm
+                  contestId={contestId}
+                  clientSecret={intentQuery.data.clientSecret}
+                  paymentIntentId={intentQuery.data.paymentIntentId}
+                />
               </Elements>
             )}
           </div>
