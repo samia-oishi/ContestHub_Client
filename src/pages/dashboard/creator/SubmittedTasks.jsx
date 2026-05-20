@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { declareWinner, getCreatorSubmissions } from '../../../api/submissionApi'
 import { EmptyState } from '../../../components/shared/EmptyState'
@@ -8,8 +8,8 @@ import { formatDate } from '../../../utils/formatters'
 
 export function SubmittedTasks() {
   const queryClient = useQueryClient()
-  const [pageLoadedAt] = useState(() => Date.now())
   const [openSubmission, setOpenSubmission] = useState(null)
+  const [currentTime, setCurrentTime] = useState(() => Date.now())
   const { data: submissions = [], isLoading, isError } = useQuery({
     queryKey: ['creator-submissions'],
     queryFn: getCreatorSubmissions,
@@ -32,12 +32,29 @@ export function SubmittedTasks() {
     },
   })
 
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 30000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const isContestEnded = (submission) => {
+    if (!submission.contestDeadline) return false
+    return new Date(submission.contestDeadline).getTime() <= currentTime
+  }
+
   const canDeclareWinner = (submission) => {
     const ended = submission.contestDeadline
-      ? new Date(submission.contestDeadline).getTime() <= pageLoadedAt
+      ? isContestEnded(submission)
       : false
 
     return ended && !submission.contestHasWinner && !submission.isWinner
+  }
+
+  const getWinnerActionLabel = (submission) => {
+    if (submission.isWinner) return 'Winner Selected'
+    if (submission.contestHasWinner) return 'Winner Declared'
+    if (!isContestEnded(submission)) return 'Deadline not ended'
+    return 'Declare Winner'
   }
 
   const isUrl = (value = '') => /^https?:\/\/\S+$/i.test(value.trim())
@@ -92,9 +109,10 @@ export function SubmittedTasks() {
                     <button
                       className="btn btn-outline btn-xs"
                       disabled={!canDeclareWinner(submission) || winnerMutation.isPending}
+                      title={getWinnerActionLabel(submission)}
                       onClick={() => winnerMutation.mutate(submission._id)}
                     >
-                      Declare Winner
+                      {getWinnerActionLabel(submission)}
                     </button>
                   </td>
                 </tr>
